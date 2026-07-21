@@ -17,10 +17,14 @@ export async function transferFunds(user: string, amount: number): Promise<strin
 			}),
 		});
 
+		if (response.ok) {
+			return `Successfully transfered $${amount} to @${user}`;
+		}
+
 		const responseJson = await response.json();
 		const message = (responseJson as any).message;
 
-		return message;
+		return message || JSON.stringify(responseJson);
 	} catch (error) {
 		return (error as Error).message;
 	}
@@ -35,6 +39,7 @@ export async function claimDailyReward(): Promise<string> {
 				'Cookie': config.cookieHeader,
 			},
 		});
+
 		if (response.ok) {
 			return 'Successfully collected daily reward';
 		} else {
