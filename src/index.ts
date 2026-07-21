@@ -64,8 +64,8 @@ async function main() {
 		}
 
 		case 'claim_daily': {
-			const success = await claimDailyReward();
-			p.outro(success ? 'Successfully collected daily reward' : 'Failed to collect daily reward');
+			const response = await claimDailyReward();
+			p.outro(response);
 			break;
 		}
 

@@ -40,8 +40,14 @@ export async function claimDailyReward(): Promise<string> {
 			},
 		});
 
+		const responseJson: any = await response.json();
+
 		if (response.ok) {
-			return 'Successfully collected daily reward';
+			if (responseJson.canClaim) {
+				return 'Successfully claimed daily reward';
+			} else {
+				return 'Daily reward already claimed';
+			}
 		} else {
 			return await response.text();
 		}
