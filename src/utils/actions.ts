@@ -1,3 +1,4 @@
+import type { Portfolio } from "../interfaces/Portfolio.js";
 import { getSettings } from "./db.js"
 
 export async function transferFunds(user: string, amount: number): Promise<string> {
@@ -53,5 +54,29 @@ export async function claimDailyReward(): Promise<string> {
 		}
 	} catch (error) {
 		return 'Failed to collect daily reward';
+	}
+}
+
+export async function getPortfolioValue(): Promise<Portfolio> {
+	const config = await getSettings();
+
+	const response = await fetch('https://rugplay.com/api/portfolio/total', {
+		headers: {
+			'Cookie': config.cookieHeader,
+		},
+	});
+
+	if (response.ok) {
+		const responseJson: any = await response.json();
+
+		const portfolioData: Portfolio = {
+			baseCurrencyValue: responseJson.baseCurrencyBalance,
+			totalCoinValue: responseJson.totalCoinValue,
+			totalValue: responseJson.totalValue,
+		};
+
+		return portfolioData;
+	} else {
+		throw new Error('failed to fetch portfolio data');
 	}
 }

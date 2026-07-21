@@ -1,7 +1,8 @@
-import { claimDailyReward, transferFunds } from "./utils/actions.js";
+import chalk from "chalk";
+import { claimDailyReward, getPortfolioValue, transferFunds } from "./utils/actions.js";
 import { coinflip } from "./utils/arcade.js";
 import { getSettings, updateSettings } from "./utils/db.js";
-import { printBody, printHeader } from "./utils/print.js";
+import { printHeader } from "./utils/print.js";
 import * as p from '@clack/prompts';
 
 async function main() {
@@ -23,6 +24,15 @@ async function main() {
 		settings.cookieHeader = cookieHeader;
 		await updateSettings(settings);
 		p.outro('Cookie header set successfully');
+	}
+
+	try {
+		const portfolioData = await getPortfolioValue();
+		console.info(chalk.green(`Total: $${portfolioData.totalValue.toFixed(2)}`));
+		console.info(chalk.yellow(`Coin holdings: $${portfolioData.totalCoinValue.toFixed(2)}`));
+		console.info(chalk.blue(`Cash: $${portfolioData.baseCurrencyValue.toFixed(2)}`));
+	} catch (error) {
+
 	}
 
 	const choice = await p.select<string>({ message: 'What would you like to do?', options: [
