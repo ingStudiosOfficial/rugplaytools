@@ -35,7 +35,23 @@ export async function claimDailyReward(): Promise<string> {
 	const config = await getSettings();
 
 	try {
+		const getResponse = await fetch('https://rugplay.com/api/rewards/claim', {
+			method: 'GET',
+			headers: {
+				'Cookie': config.cookieHeader,
+			},
+		});
+
+		const getResponseJson: any = await getResponse.json();
+
+		if (getResponse.ok) {
+			if (!getResponseJson.canClaim) {
+				return 'Daily reward already claimed';
+			}
+		}
+
 		const response = await fetch('https://rugplay.com/api/rewards/claim', {
+			method: 'POST',
 			headers: {
 				'Cookie': config.cookieHeader,
 			},
@@ -44,13 +60,10 @@ export async function claimDailyReward(): Promise<string> {
 		const responseJson: any = await response.json();
 
 		if (response.ok) {
-			if (responseJson.canClaim) {
-				return 'Successfully claimed daily reward';
-			} else {
-				return 'Daily reward already claimed';
-			}
+			if (responseJson.success) return 'Successfully claimed daily reward';
+			else return 'Failed to claim daily reward'
 		} else {
-			return await response.text();
+			return 'Failed to claim daily reward';
 		}
 	} catch (error) {
 		return 'Failed to collect daily reward';
